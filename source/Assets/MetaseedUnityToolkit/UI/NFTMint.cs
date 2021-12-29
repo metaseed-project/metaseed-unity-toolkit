@@ -16,9 +16,9 @@ public class NFTMint : MonoBehaviour
 
     async void OnClick()
     {
-        string accountId = PluginStorage.PlayerNearAccountId;
-        Debug.LogError("NFT Mint" + accountId);
-        dynamic result = await simpleNFTPublisher.MintNftWithParameters("tonyraven.testnet", "Test", "Test description", "https://bafybeiezwejfrmigg2mefe5egfysnbrjr4iqstgleh7nwgh4vjgdpqe7oe.ipfs.dweb.link/", accountId, EConnectionActor.Player);
-        Debug.LogError(JsonConvert.SerializeObject(result));
+        // string accountId = PluginStorage.PlayerNearAccountId;
+        // Debug.LogError("NFT Mint" + accountId);
+        // dynamic result = await simpleNFTPublisher.MintNftWithParameters("tonyraven.testnet", "Test", "Test description", "https://bafybeiezwejfrmigg2mefe5egfysnbrjr4iqstgleh7nwgh4vjgdpqe7oe.ipfs.dweb.link/", accountId, EConnectionActor.Player);
+        // Debug.LogError(JsonConvert.SerializeObject(result));
     }
 }
