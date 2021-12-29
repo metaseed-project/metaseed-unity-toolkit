@@ -24,7 +24,7 @@ public class ContractCallerEditor : Editor
         listProperty = serializedObject.FindProperty("arguments");
     }
 
-    int selectedAction = 0;
+
     public override void OnInspectorGUI()
     {
         bool isSelectedRoleConnected = IsSelectedRoleConnected();
@@ -40,7 +40,7 @@ public class ContractCallerEditor : Editor
             EditorGUILayout.Space();
 
             string[] options = new string[] { "Call", "View" };
-            selectedAction = EditorGUILayout.Popup("Choose action type:", selectedAction, options);
+            _target.selectedAction = EditorGUILayout.Popup("Choose action type:", _target.selectedAction, options);
 
             EditorGUILayout.Space();
 
@@ -58,7 +58,7 @@ public class ContractCallerEditor : Editor
 
             if (!_target.IsCallDataValid()) GUI.enabled = false;
 
-            if (selectedAction == 0)
+            if (_target.selectedAction == 0)
             {
                 if (GUILayout.Button("Call contract"))
                 {
@@ -66,7 +66,7 @@ public class ContractCallerEditor : Editor
                     CallAndWaitForResult();
                 }
             }
-            else if (selectedAction == 1)
+            else if (_target.selectedAction == 1)
             {
                 if (GUILayout.Button("View contract"))
                 {
@@ -80,7 +80,7 @@ public class ContractCallerEditor : Editor
             EditorGUILayout.Space();
             EditorGUILayout.Space();
 
-            if (selectedAction == 0)
+            if (_target.selectedAction == 0)
             {
                 DrawExtraSettings();
             }
@@ -89,12 +89,12 @@ public class ContractCallerEditor : Editor
         {
             EditorGUILayout.Space();
 
-            if (selectedRole == 0)
+            if (_target.selectedRole == 0)
             {
                 GUILayout.Label("You should connect player account first");
                 GUILayout.Label("Drag the 'Player Connect' component somewhere in your scene and press connect.", EditorStyles.miniLabel);
             }
-            else if (selectedRole == 1)
+            else if (_target.selectedRole == 1)
             {
                 GUILayout.Label("You should connect developer account first");
                 GUILayout.Label("Open Near > Developer Account and press connect", EditorStyles.miniLabel);
@@ -106,7 +106,7 @@ public class ContractCallerEditor : Editor
     public async void CallAndWaitForResult()
     {
         Debug.Log("Transaction is pending");
-        dynamic result = await _target.CallContractWithParameters(_target.contractAddress, _target.contractMethod, _target.arguments, _target.actor, nearGas, yoctoNearDeposit);
+        dynamic result = await _target.CallContractWithParameters(_target.contractAddress, _target.contractMethod, _target.arguments, _target.actor, _target.nearGas, _target.yoctoNearDeposit);
         Debug.Log(JsonConvert.SerializeObject(result));
     }
 
@@ -117,31 +117,27 @@ public class ContractCallerEditor : Editor
         Debug.Log(JsonConvert.SerializeObject(result));
     }
 
-    private int selectedRole = 0;
+
     private bool IsSelectedRoleConnected()
     {
         string[] options = new string[] { "Player", "Developer" };
-        selectedRole = EditorGUILayout.Popup("Choose your role:", selectedRole, options);
-        if (selectedRole == 0) _target.actor = EConnectionActor.Player;
-        else if (selectedRole == 1) _target.actor = EConnectionActor.Developer;
+        _target.selectedRole = EditorGUILayout.Popup("Choose your role:", _target.selectedRole, options);
+        if (_target.selectedRole == 0) _target.actor = EConnectionActor.Player;
+        else if (_target.selectedRole == 1) _target.actor = EConnectionActor.Developer;
 
         return ConnectionsManager.IsConnected(_target.actor);
     }
 
-
-    ulong nearGas;
-    UInt128 yoctoNearDeposit;
-    bool showExtraSettings = false;
     void DrawExtraSettings()
     {
-        showExtraSettings = EditorGUILayout.Toggle("Settings", showExtraSettings);
-        if (showExtraSettings)
+        _target.showExtraSettings = EditorGUILayout.Toggle("Settings", _target.showExtraSettings);
+        if (_target.showExtraSettings)
         {
             _target.gas = Convert.ToDouble(EditorGUILayout.TextField("TGas: ", _target.gas.ToString()));
-            nearGas = (ulong)UnitConverter.GetGasFormat(_target.gas);
+            _target.nearGas = (ulong)UnitConverter.GetGasFormat(_target.gas);
 
             _target.deposit = Convert.ToDouble(EditorGUILayout.TextField("Deposit: ", _target.deposit.ToString()));
-            yoctoNearDeposit = (UInt128)UnitConverter.GetYoctoNearFormat(_target.deposit);
+            _target.yoctoNearDeposit = (UInt128)UnitConverter.GetYoctoNearFormat(_target.deposit);
         }
     }
 }
