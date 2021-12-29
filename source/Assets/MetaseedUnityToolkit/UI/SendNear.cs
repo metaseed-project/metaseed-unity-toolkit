@@ -17,7 +17,7 @@ public class SendNear : MonoBehaviour
 
     async void OnClick()
     {
-        dynamic result = await ns.SendNear("tonyraven.testnet", (UInt128)UnitConverter.GetYoctoNearFormat(6.1), EConnectionActor.Developer);
-        //Debug.LogError(JsonConvert.SerializeObject(result));
+        dynamic result = await ns.SendNear("metaseed.testnet", (UInt128)UnitConverter.GetYoctoNearFormat(6.1), EConnectionActor.Player);
+        Debug.LogError(JsonConvert.SerializeObject(result));
     }
 }

@@ -43,7 +43,7 @@ public class NearSenderEditor : Editor
             if (GUILayout.Button("Send"))
             {
                 GUI.enabled = true;
-                SendAndwaitForResult(yoctoNearDeposit);
+                SendAndWaitForResult(yoctoNearDeposit);
             }
 
             GUI.enabled = true;
@@ -68,7 +68,7 @@ public class NearSenderEditor : Editor
         }
     }
 
-    public async void SendAndwaitForResult(UInt128 yoctoNearDeposit)
+    public async void SendAndWaitForResult(UInt128 yoctoNearDeposit)
     {
         Debug.Log("Transaction is pending");
         dynamic result = await _target.SendNear(_target.receiverId, yoctoNearDeposit, _target.actor);

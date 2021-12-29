@@ -5,6 +5,10 @@ using UnityEditorInternal;
 using UnityEngine;
 using System.Linq;
 using System;
+using Newtonsoft.Json;
+using System.Dynamic;
+using UnityEngine.UI;
+using NearClient.Utilities;
 using MetaseedUnityToolkit;
 
 [CustomEditor(typeof(ContractCaller))]
@@ -40,7 +44,6 @@ public class ContractCallerEditor : Editor
 
             EditorGUILayout.Space();
 
-            // Ofcourse you also want to change the list size here
             listProperty.arraySize = EditorGUILayout.IntField("Arguments", listProperty.arraySize);
 
             for (int i = 0; i < listProperty.arraySize; i++)
@@ -49,7 +52,6 @@ public class ContractCallerEditor : Editor
                 EditorGUILayout.PropertyField(dialogue, new GUIContent("Argument "), true);
             }
 
-            // Note: You also forgot to add this
             serializedObject.ApplyModifiedProperties();
 
             EditorGUILayout.Space();
@@ -57,11 +59,11 @@ public class ContractCallerEditor : Editor
             if (!_target.IsCallDataValid()) GUI.enabled = false;
 
             if (selectedAction == 0)
-            { 
+            {
                 if (GUILayout.Button("Call contract"))
                 {
                     GUI.enabled = true;
-                    _target.CallContractWithParameters(_target.contractAddress, _target.contractMethod, _target.arguments, _target.actor, _target.gas, _target.deposit);
+                    CallAndWaitForResult();
                 }
             }
             else if (selectedAction == 1)
@@ -69,7 +71,7 @@ public class ContractCallerEditor : Editor
                 if (GUILayout.Button("View contract"))
                 {
                     GUI.enabled = true;
-                    _target.ViewContractWithParameters(_target.contractAddress, _target.contractMethod, _target.arguments,  _target.actor);
+                    ViewAndWaitForResult();
                 }
 
             }
@@ -101,6 +103,20 @@ public class ContractCallerEditor : Editor
         }
     }
 
+    public async void CallAndWaitForResult()
+    {
+        Debug.Log("Transaction is pending");
+        dynamic result = await _target.CallContractWithParameters(_target.contractAddress, _target.contractMethod, _target.arguments, _target.actor, nearGas, yoctoNearDeposit);
+        Debug.Log(JsonConvert.SerializeObject(result));
+    }
+
+    public async void ViewAndWaitForResult()
+    {
+        Debug.Log("Transaction is pending");
+        dynamic result = await _target.ViewContractWithParameters(_target.contractAddress, _target.contractMethod, _target.arguments, _target.actor);
+        Debug.Log(JsonConvert.SerializeObject(result));
+    }
+
     private int selectedRole = 0;
     private bool IsSelectedRoleConnected()
     {
@@ -113,24 +129,19 @@ public class ContractCallerEditor : Editor
     }
 
 
+    ulong nearGas;
+    UInt128 yoctoNearDeposit;
     bool showExtraSettings = false;
     void DrawExtraSettings()
     {
         showExtraSettings = EditorGUILayout.Toggle("Settings", showExtraSettings);
         if (showExtraSettings)
         {
-            string tGasField = UnitConverter.GetTGasFormat(_target.gas).ToString();
-            tGasField = EditorGUILayout.TextField("TGas: ", tGasField).Replace('.', ',');
-            _target.gas = UnitConverter.GetGasFormat( Convert.ToDouble(tGasField) );
+            _target.gas = Convert.ToDouble(EditorGUILayout.TextField("TGas: ", _target.gas.ToString()));
+            nearGas = (ulong)UnitConverter.GetGasFormat(_target.gas);
 
-            string depositNearField = UnitConverter.GetNearFormat(_target.deposit).ToString();
-            depositNearField = EditorGUILayout.TextField("Deposit: ", depositNearField).Replace('.', ',');
-            _target.deposit = UnitConverter.GetYoctoNearFormat( Convert.ToDouble(depositNearField) );
-        }
-        else
-        {
-            _target.gas = UnitConverter.GetGasFormat(10.0);
-            _target.deposit = UnitConverter.GetYoctoNearFormat(0.1);
+            _target.deposit = Convert.ToDouble(EditorGUILayout.TextField("Deposit: ", _target.deposit.ToString()));
+            yoctoNearDeposit = (UInt128)UnitConverter.GetYoctoNearFormat(_target.deposit);
         }
     }
 }

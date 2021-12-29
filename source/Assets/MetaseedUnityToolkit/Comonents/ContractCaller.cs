@@ -16,12 +16,12 @@ namespace MetaseedUnityToolkit
         public List<ContractArgument> arguments = new List<ContractArgument>();
 
         [System.NonSerialized]
-        public string contractAddress;
+        public string contractAddress = "testcounter.metaseed.testnet";
 
-        public string contractMethod;
+        public string contractMethod = "incrementCounter";
 
-        public ulong? gas;
-        public Nullable<UInt128> deposit;
+        public double gas = 10.0;
+        public double deposit = 0;
 
         public EConnectionActor actor;
 
@@ -53,17 +53,7 @@ namespace MetaseedUnityToolkit
             }
 
             Connection connection = ConnectionsManager.GetConnectionInstance(_actor);
-
-            dynamic args = new ExpandoObject();
-
-            foreach (ContractArgument a in _arguments)
-            {
-                args[a.name] = a.value;
-            }
-
-            //TODO: gas calculation up to Anton
-
-            return await connection.CallMethod(_contractAddress, _contractMethod, args, _gas, _deposit);
+            return await connection.CallMethod(_contractAddress, _contractMethod, ConstructArguments(_arguments), _gas, _deposit);
         }
 
         public async Task<dynamic> ViewContractWithParameters(string _contractAddress, string _contractMethod, List<ContractArgument> _arguments, EConnectionActor _actor)
@@ -81,32 +71,31 @@ namespace MetaseedUnityToolkit
             }
 
             Connection connection = ConnectionsManager.GetConnectionInstance(_actor);
+            return await connection.ViewMethod(_contractAddress, _contractMethod, ConstructArguments(_arguments));
+        }
 
+        public dynamic ConstructArguments(List<ContractArgument> _arguments)
+        {
             dynamic args = new ExpandoObject();
 
             foreach (ContractArgument a in _arguments)
             {
-                args[a.name] = a.value;
+                if (a.type == "i32") ((IDictionary<String, object>)args)[a.name] = Int32.Parse(a.value);
+                else if (a.type == "i64") ((IDictionary<String, object>)args)[a.name] = Int64.Parse(a.value);
+                else if (a.type == "string") ((IDictionary<String, object>)args)[a.name] = a.value.ToString();
             }
-
-            //TODO: gas calculation up to Anton
-
-            return await connection.ViewMethod(_contractAddress, _contractMethod, args);
-        } 
-
-        public static UInt128 GetNearFormat(double amount)
-        {
-            UInt128 p = new UInt128(amount * 1000000000);
-            UInt128.Create(out var lp, 1000000000000000);
-            var res = p * lp;
-            return res;
+            return args;
         }
     }
+
+
 
     [System.Serializable]
     public class ContractArgument
     {
         public string name = "";
         public string value;
+
+        public string type = "i32";
     }
 }
