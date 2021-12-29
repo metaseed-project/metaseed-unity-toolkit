@@ -34,6 +34,13 @@ public class PlayerConnectorEditor : Editor
         else
         {
             GUILayout.Label("Player wallet: " + PluginStorage.PlayerNearAccountId, EditorStyles.label);
+
+            EditorGUILayout.Space();
+
+            if (GUILayout.Button("Disconnect"))
+            {
+                ConnectionsManager.Disconnect(EConnectionActor.Player);
+            }
         }
     }
 }
