@@ -9,6 +9,7 @@ using MetaseedUnityToolkit;
 public class DemoControllerScript : MonoBehaviour
 {
     private string accountId;
+    private EConnectionActor actor = EConnectionActor.Player;
 
     public PlayerConnector playerConnector;
     public SimpleNFTPublisher simpleNFTPublisher;
@@ -50,7 +51,7 @@ public class DemoControllerScript : MonoBehaviour
 
     async void OnConnectPlayer()
     {
-        await playerConnector.ConnectWalletByBrowser(EConnectionActor.Player);
+        await playerConnector.ConnectWalletByBrowser(actor);
         
         FetchAccountId();
         if (accountId != null)
@@ -68,7 +69,7 @@ public class DemoControllerScript : MonoBehaviour
         FetchAccountId();
         Debug.Log(accountId + " is sending NEAR");
 
-        dynamic result = await nearSender.SendNear(accountId, UnitConverter.GetYoctoNearFormat(6.1), EConnectionActor.Player);
+        dynamic result = await nearSender.SendNear(accountId, UnitConverter.GetYoctoNearFormat(6.1), actor);
         Debug.Log("Blockchain has returned the result of sending near: " + JsonConvert.SerializeObject(result));
     }
 
@@ -81,7 +82,7 @@ public class DemoControllerScript : MonoBehaviour
         string description = "Welcome to Metaseed ecosystem!";
         string media = "https://gateway.ipfs.io/ipfs/QmcniBv7UQ4gGPQQW2BwbD4ZZHzN3o3tPuNLZCbBchd1zh";
 
-        dynamic result = await simpleNFTPublisher.MintNftWithParameters("example-nft.testnet", name, description, media, accountId, EConnectionActor.Player);
+        dynamic result = await simpleNFTPublisher.MintNftWithParameters("example-nft.testnet", name, description, media, accountId, actor);
         Debug.Log("Blockchain has returned the result of NFT minting: " + JsonConvert.SerializeObject(result));
     }
 
@@ -103,7 +104,7 @@ public class DemoControllerScript : MonoBehaviour
         arguments.Add( new ContractArgument() { name = "receiver_id", value = accountId, type = "string"} );
         arguments.Add( new ContractArgument() { name = "amount", value = "6100", type = "string"} );
 
-        dynamic result = await contractCaller.CallContractWithParameters("ft.examples.testnet", "ft_mint", arguments, EConnectionActor.Player);
+        dynamic result = await contractCaller.CallContractWithParameters("ft.examples.testnet", "ft_mint", arguments, actor);
         Debug.Log("Blockchain has returned the result of contract calling: " + JsonConvert.SerializeObject(result));
     }
 }
