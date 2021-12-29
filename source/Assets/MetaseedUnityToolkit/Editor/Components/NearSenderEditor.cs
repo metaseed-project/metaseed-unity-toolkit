@@ -5,8 +5,10 @@ using UnityEditorInternal;
 using UnityEngine;
 using System.Linq;
 using System;
+using Newtonsoft.Json;
 using System.Dynamic;
 using UnityEngine.UI;
+using NearClient.Utilities;
 using MetaseedUnityToolkit;
 
 [CustomEditor(typeof(NearSender))]
@@ -29,19 +31,19 @@ public class NearSenderEditor : Editor
 
             _target.receiverId = EditorGUILayout.TextField("Receiver address: ", _target.receiverId);
 
-            string _deposit = UnitConverter.GetNearFormat(_target.deposit).ToString();
-            _deposit = EditorGUILayout.TextField("Amount: ", _deposit).Replace('.', ',');
-            _target.deposit = UnitConverter.GetYoctoNearFormat( Convert.ToDouble(_deposit) );
+            _target.deposit = Convert.ToDouble(EditorGUILayout.TextField("Amount: ", _target.deposit.ToString()));
+
+            UInt128 yoctoNearDeposit = (UInt128)UnitConverter.GetYoctoNearFormat(_target.deposit);
 
             EditorGUILayout.Space();
             EditorGUILayout.Space();
 
-            if (!_target.IsCallDataValid(_target.receiverId, _target.deposit)) GUI.enabled = false;
+            if (!_target.IsCallDataValid(_target.receiverId, yoctoNearDeposit)) GUI.enabled = false;
 
             if (GUILayout.Button("Send"))
             {
                 GUI.enabled = true;
-                _target.SendNear(_target.receiverId, _target.deposit, _target.actor);
+                SendAndwaitForResult(yoctoNearDeposit);
             }
 
             GUI.enabled = true;
@@ -64,6 +66,13 @@ public class NearSenderEditor : Editor
             }
 
         }
+    }
+
+    public async void SendAndwaitForResult(UInt128 yoctoNearDeposit)
+    {
+        Debug.Log("Transaction is pending");
+        dynamic result = await _target.SendNear(_target.receiverId, yoctoNearDeposit, _target.actor);
+        Debug.Log(JsonConvert.SerializeObject(result));
     }
 
     private int selectedRole = 0;
