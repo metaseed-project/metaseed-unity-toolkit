@@ -22,7 +22,10 @@ namespace MetaseedUnityToolkit
 
         public double gas = 10.0;
         public double deposit = 0;
-
+        /*
+        public ulong? gas;
+        public Nullable<UInt128> deposit;
+        */
         public EConnectionActor actor;
 
         //--- Editor Settings
