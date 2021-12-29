@@ -43,7 +43,8 @@ Then, in Contract Caller, you can do any logic for interaction between the game 
 
 ![Alt text](/screenshots/3.jpeg)
 
-It could be both minting a new NFT or sending a pre-minted NFT to a player. In order to send you just need to specify the receiver’s address and an amount to send.
+It could be both minting a new NFT or sending a pre-minted NFT to a player. 
+You also could send NEAR. In order to send you just need to specify the receiver’s address and an amount to send.
 
 ![Alt text](/screenshots/5.jpeg)
 
