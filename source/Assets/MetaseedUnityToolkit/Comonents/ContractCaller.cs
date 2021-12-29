@@ -28,6 +28,14 @@ namespace MetaseedUnityToolkit
         */
         public EConnectionActor actor;
 
+        //--- Editor Settings
+
+        public ulong nearGas;
+        public UInt128 yoctoNearDeposit;
+        public bool showExtraSettings = false;
+        public int selectedRole = 0;
+        public int selectedAction = 0;
+
         public bool IsCallDataValid()
         {
             if (contractAddress == "") return false;
