@@ -16,11 +16,15 @@ public class DemoControllerScript : MonoBehaviour
     public ContractCaller contractCaller;
     public NearSender nearSender;
 
-    public Button connectButton;
-    public Button sendButton;
-    public Button mintButton;
-    public Button callButton;
+    public GameObject connectButtonObject;
+    public GameObject sendButtonObject;
+    public GameObject mintButtonObject;
+    public GameObject callButtonObject;
     
+    private Button connectButton;
+    private Button sendButton;
+    private Button mintButton;
+    private Button callButton;
 
     void Start()
     {
@@ -30,22 +34,18 @@ public class DemoControllerScript : MonoBehaviour
         if (contractCaller == null) contractCaller = GameObject.Find("Actions/CallContract").GetComponent<ContractCaller>();
         if (nearSender == null) nearSender = GameObject.Find("Actions/SendNear").GetComponent<NearSender>();
 
-        Debug.Log($@"ConnectPlayer is found ({playerConnector != null})
-                    MintNFT is found ({simpleNFTPublisher != null})
-                    CallContract is found ({contractCaller != null})
-                    SendNear is found ({nearSender != null})");
+        Debug.Log($@"ConnectPlayer is found ({playerConnector != null}) | MintNFT is found ({simpleNFTPublisher != null}) | CallContract is found ({contractCaller != null}) | SendNear is found ({nearSender != null})");
 
-
-        connectButton = gameObject.GetComponent<Button>();
+        connectButton = connectButtonObject.GetComponent<Button>();
         connectButton.onClick.AddListener(OnConnectPlayer);
 
-        sendButton = gameObject.GetComponent<Button>();
+        sendButton = sendButtonObject.GetComponent<Button>();
         sendButton.onClick.AddListener(OnSendNear);
 
-        mintButton = gameObject.GetComponent<Button>();
+        mintButton = mintButtonObject.GetComponent<Button>();
         mintButton.onClick.AddListener(OnMintNFT);
 
-        callButton = gameObject.GetComponent<Button>();
+        callButton = callButtonObject.GetComponent<Button>();
         callButton.onClick.AddListener(OnContractCall);
     }
 
@@ -79,10 +79,11 @@ public class DemoControllerScript : MonoBehaviour
         Debug.Log(accountId + " is minting an NFT");
 
         string name = "Metaseed NFT";
+        string tokenId = "NFT #0001";
         string description = "Welcome to Metaseed ecosystem!";
         string media = "https://gateway.ipfs.io/ipfs/QmcniBv7UQ4gGPQQW2BwbD4ZZHzN3o3tPuNLZCbBchd1zh";
 
-        dynamic result = await simpleNFTPublisher.MintNftWithParameters("example-nft.testnet", name, description, media, accountId, actor);
+        dynamic result = await simpleNFTPublisher.MintNftWithParameters("example-nft.testnet", name, tokenId, description, media, accountId, actor);
         Debug.Log("Blockchain has returned the result of NFT minting: " + JsonConvert.SerializeObject(result));
     }
 
