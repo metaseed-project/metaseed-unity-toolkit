@@ -13,18 +13,27 @@ namespace MetaseedUnityToolkit
     public class SimpleNFTPublisher : MonoBehaviour
     {
         [System.NonSerialized]
-        public string contractAddress;
+        public string contractAddress = "example-nft.testnet";
 
         public string title;
         public string description;
         public string media;
-        public string tokenId;
+        public string tokenId = "0";
         public string receiverId;
 
-        public ulong? gas;
-        public Nullable<UInt128> deposit;
+        public double gas = 10.0;
+        public double deposit = 0.1;
 
         public EConnectionActor actor;
+
+
+        //--- Editor Settings
+
+        public ulong nearGas;
+        public UInt128 yoctoNearDeposit;
+        public bool showExtraSettings = false;
+        public int selectedRole = 0;
+        public int selectedAction = 0;
 
         public bool IsNFTDataValid()
         {
@@ -38,7 +47,7 @@ namespace MetaseedUnityToolkit
             return true;
         }
 
-        public async Task<dynamic> MintNftWithParameters(string _contractAddress, string _title, string _description, string _media, string _receiverId, EConnectionActor _actor, ulong? _gas = null, Nullable<UInt128> _deposit = null)
+        public async Task<dynamic> MintNftWithParameters(string _contractAddress, string _tokenId, string _title, string _description, string _media, string _receiverId, EConnectionActor _actor, ulong? _gas = null, Nullable<UInt128> _deposit = null)
         {
             if (!IsNFTDataValid())
             {
@@ -57,7 +66,7 @@ namespace MetaseedUnityToolkit
             dynamic args = new ExpandoObject();
 
             //TODO: get token_id dynamically
-            args.token_id = tokenId;
+            args.token_id = _tokenId;
             args.title = _title;
             args.receiver_id = _receiverId;
 
@@ -70,7 +79,6 @@ namespace MetaseedUnityToolkit
             _gas = _gas ?? UnitConverter.GetGasFormat(15.0);
             _deposit = _deposit ?? UnitConverter.GetYoctoNearFormat(0.1);
 
-            //TODO: calculate gas dynamically 300000000000000;
             return await connection.CallMethod(_contractAddress, "nft_mint", args, _gas, _deposit);
         }
     }

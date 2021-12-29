@@ -13,9 +13,9 @@ namespace MetaseedUnityToolkit
     public class NearSender : MonoBehaviour
     {
         [System.NonSerialized]
-        public string receiverId = "";
+        public string receiverId = "metaseed.testnet";
 
-        public UInt128 deposit = 0;
+        public double deposit = 0f;
 
         public EConnectionActor actor;
 
@@ -35,14 +35,13 @@ namespace MetaseedUnityToolkit
                 return new ExpandoObject();
             }
 
-            if (!ConnectionsManager.IsConnected(_actor))    
+            if (!ConnectionsManager.IsConnected(_actor))
             {
                 Debug.LogError("Warning: Your near account is not connected.");
                 return new ExpandoObject();
             }
 
             Connection connection = ConnectionsManager.GetConnectionInstance(_actor);
-
             return await connection.SendMoney(_receiverId, _deposit);
         }
     }
