@@ -56,10 +56,10 @@ public class ContractCallerEditor : Editor
 
             EditorGUILayout.Space();
 
-            if (!_target.IsCallDataValid()) GUI.enabled = false;
-
             if (_target.selectedAction == 0)
             {
+                if (!_target.IsCallDataValid(_target.contractAddress, _target.contractMethod, _target.arguments)) GUI.enabled = false;
+
                 if (GUILayout.Button("Call contract"))
                 {
                     GUI.enabled = true;
@@ -68,6 +68,8 @@ public class ContractCallerEditor : Editor
             }
             else if (_target.selectedAction == 1)
             {
+                if (!_target.IsViewDataValid(_target.contractAddress, _target.contractMethod)) GUI.enabled = false;
+
                 if (GUILayout.Button("View contract"))
                 {
                     GUI.enabled = true;

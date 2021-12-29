@@ -46,7 +46,7 @@ public class SimpleNFTPublisherEditor : Editor
             EditorGUILayout.Space();
             EditorGUILayout.Space();
 
-            if (!_target.IsNFTDataValid()) GUI.enabled = false;
+            if (!_target.IsNFTDataValid(_target.title, _target.media, _target.receiverId)) GUI.enabled = false;
 
             if (GUILayout.Button("Mint NFT"))
             {

@@ -20,7 +20,7 @@ public class DemoControllerScript : MonoBehaviour
     public GameObject sendButtonObject;
     public GameObject mintButtonObject;
     public GameObject callButtonObject;
-    
+
     private Button connectButton;
     private Button sendButton;
     private Button mintButton;
@@ -52,7 +52,7 @@ public class DemoControllerScript : MonoBehaviour
     async void OnConnectPlayer()
     {
         await playerConnector.ConnectWalletByBrowser(actor);
-        
+
         FetchAccountId();
         if (accountId != null)
             Debug.Log(accountId + " connected as a player successfully");
@@ -60,7 +60,8 @@ public class DemoControllerScript : MonoBehaviour
             Debug.LogError("En error occured while connecting to " + accountId);
     }
 
-    void FetchAccountId(){
+    void FetchAccountId()
+    {
         accountId = MetaseedUnityToolkit.PluginStorage.PlayerNearAccountId;
     }
 
@@ -79,16 +80,17 @@ public class DemoControllerScript : MonoBehaviour
         Debug.Log(accountId + " is minting an NFT");
 
         string name = "Metaseed NFT";
-        string tokenId = "NFT #0001";
+        string tokenId = "88";
         string description = "Welcome to Metaseed ecosystem!";
         string media = "https://gateway.ipfs.io/ipfs/QmcniBv7UQ4gGPQQW2BwbD4ZZHzN3o3tPuNLZCbBchd1zh";
+        ulong nearGas = (ulong)UnitConverter.GetGasFormat(30);
 
-        dynamic result = await simpleNFTPublisher.MintNftWithParameters("example-nft.testnet", name, tokenId, description, media, accountId, actor);
+        dynamic result = await simpleNFTPublisher.MintNftWithParameters("example-nft.testnet", tokenId, name, description, media, accountId, actor, nearGas);
         Debug.Log("Blockchain has returned the result of NFT minting: " + JsonConvert.SerializeObject(result));
     }
 
     async void OnContractCall()
-    {   
+    {
         FetchAccountId();
         Debug.Log(accountId + " is calling a contract");
 
@@ -102,10 +104,14 @@ public class DemoControllerScript : MonoBehaviour
         // In C# we create them using List<ContractArgument>
         List<ContractArgument> arguments = new List<ContractArgument>();
 
-        arguments.Add( new ContractArgument() { name = "receiver_id", value = accountId, type = "string"} );
-        arguments.Add( new ContractArgument() { name = "amount", value = "6100", type = "string"} );
+        arguments.Add(new ContractArgument() { name = "receiver_id", value = accountId, type = "string" });
+        arguments.Add(new ContractArgument() { name = "amount", value = "3", type = "string" });
 
-        dynamic result = await contractCaller.CallContractWithParameters("ft.examples.testnet", "ft_mint", arguments, actor);
+        ulong nearGas = (ulong)UnitConverter.GetGasFormat(30);
+
+        UInt128 yoctoNearDeposit = (UInt128)UnitConverter.GetYoctoNearFormat(0.7);
+
+        dynamic result = await contractCaller.CallContractWithParameters("ft.examples.testnet", "ft_mint", arguments, actor, nearGas, yoctoNearDeposit);
         Debug.Log("Blockchain has returned the result of contract calling: " + JsonConvert.SerializeObject(result));
     }
 }

@@ -35,21 +35,21 @@ namespace MetaseedUnityToolkit
         public int selectedRole = 0;
         public int selectedAction = 0;
 
-        public bool IsNFTDataValid()
+        public bool IsNFTDataValid(string _title, string _media, string _receiverId)
         {
-            if (title == "") return false;
+            if (_title == "") return false;
 
-            if (media == "") return false;
+            if (_media == "") return false;
 
             //TODO: check if valid address
-            if (receiverId == "") return false;
+            if (_receiverId == "") return false;
 
             return true;
         }
 
         public async Task<dynamic> MintNftWithParameters(string _contractAddress, string _tokenId, string _title, string _description, string _media, string _receiverId, EConnectionActor _actor, ulong? _gas = null, Nullable<UInt128> _deposit = null)
         {
-            if (!IsNFTDataValid())
+            if (!IsNFTDataValid(_title, _media, _receiverId))
             {
                 Debug.LogError("Warning: Nft metadata is not valid, request will not be send.");
                 return new ExpandoObject();

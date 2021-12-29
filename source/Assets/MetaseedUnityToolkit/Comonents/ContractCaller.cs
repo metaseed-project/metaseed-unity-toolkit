@@ -36,12 +36,12 @@ namespace MetaseedUnityToolkit
         public int selectedRole = 0;
         public int selectedAction = 0;
 
-        public bool IsCallDataValid()
+        public bool IsCallDataValid(string _contractAddress, string _contractMethod, List<ContractArgument> _arguments)
         {
-            if (contractAddress == "") return false;
-            if (contractMethod == "") return false;
+            if (_contractAddress == "") return false;
+            if (_contractMethod == "") return false;
 
-            foreach (ContractArgument p in arguments)
+            foreach (ContractArgument p in _arguments)
             {
                 if (p.name == "") return false;
                 if (p.value == "") return false;
@@ -49,9 +49,17 @@ namespace MetaseedUnityToolkit
             return true;
         }
 
+        public bool IsViewDataValid(string _contractAddress, string _contractMethod)
+        {
+            if (_contractAddress == "") return false;
+            if (_contractMethod == "") return false;
+
+            return true;
+        }
+
         public async Task<dynamic> CallContractWithParameters(string _contractAddress, string _contractMethod, List<ContractArgument> _arguments, EConnectionActor _actor, ulong? _gas = null, Nullable<UInt128> _deposit = null)
         {
-            if (!IsCallDataValid())
+            if (!IsCallDataValid(_contractAddress, _contractMethod, _arguments))
             {
                 Debug.LogError("Warning: Call metadata is not valid, request will not be send.");
                 return new ExpandoObject();
@@ -69,7 +77,7 @@ namespace MetaseedUnityToolkit
 
         public async Task<dynamic> ViewContractWithParameters(string _contractAddress, string _contractMethod, List<ContractArgument> _arguments, EConnectionActor _actor)
         {
-            if (!IsCallDataValid())
+            if (!IsViewDataValid(_contractAddress, _contractMethod))
             {
                 Debug.LogError("Warning: Call metadata is not valid, request will not be send.");
                 return new ExpandoObject();
