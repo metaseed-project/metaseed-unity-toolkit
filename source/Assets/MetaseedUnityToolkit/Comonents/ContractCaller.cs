@@ -16,21 +16,32 @@ namespace MetaseedUnityToolkit
         public List<ContractArgument> arguments = new List<ContractArgument>();
 
         [System.NonSerialized]
-        public string contractAddress;
+        public string contractAddress = "testcounter.metaseed.testnet";
 
-        public string contractMethod;
+        public string contractMethod = "incrementCounter";
 
+        public double gas = 10.0;
+        public double deposit = 0;
+        /*
         public ulong? gas;
         public Nullable<UInt128> deposit;
-
+        */
         public EConnectionActor actor;
 
-        public bool IsCallDataValid()
-        {
-            if (contractAddress == "") return false;
-            if (contractMethod == "") return false;
+        //--- Editor Settings
 
-            foreach (ContractArgument p in arguments)
+        public ulong nearGas;
+        public UInt128 yoctoNearDeposit;
+        public bool showExtraSettings = false;
+        public int selectedRole = 0;
+        public int selectedAction = 0;
+
+        public bool IsCallDataValid(string _contractAddress, string _contractMethod, List<ContractArgument> _arguments)
+        {
+            if (_contractAddress == "") return false;
+            if (_contractMethod == "") return false;
+
+            foreach (ContractArgument p in _arguments)
             {
                 if (p.name == "") return false;
                 if (p.value == "") return false;
@@ -38,9 +49,17 @@ namespace MetaseedUnityToolkit
             return true;
         }
 
+        public bool IsViewDataValid(string _contractAddress, string _contractMethod)
+        {
+            if (_contractAddress == "") return false;
+            if (_contractMethod == "") return false;
+
+            return true;
+        }
+
         public async Task<dynamic> CallContractWithParameters(string _contractAddress, string _contractMethod, List<ContractArgument> _arguments, EConnectionActor _actor, ulong? _gas = null, Nullable<UInt128> _deposit = null)
         {
-            if (!IsCallDataValid())
+            if (!IsCallDataValid(_contractAddress, _contractMethod, _arguments))
             {
                 Debug.LogError("Warning: Call metadata is not valid, request will not be send.");
                 return new ExpandoObject();
@@ -53,22 +72,12 @@ namespace MetaseedUnityToolkit
             }
 
             Connection connection = ConnectionsManager.GetConnectionInstance(_actor);
-
-            dynamic args = new ExpandoObject();
-
-            foreach (ContractArgument a in _arguments)
-            {
-                args[a.name] = a.value;
-            }
-
-            //TODO: gas calculation up to Anton
-
-            return await connection.CallMethod(_contractAddress, _contractMethod, args, _gas, _deposit);
+            return await connection.CallMethod(_contractAddress, _contractMethod, ConstructArguments(_arguments), _gas, _deposit);
         }
 
         public async Task<dynamic> ViewContractWithParameters(string _contractAddress, string _contractMethod, List<ContractArgument> _arguments, EConnectionActor _actor)
         {
-            if (!IsCallDataValid())
+            if (!IsViewDataValid(_contractAddress, _contractMethod))
             {
                 Debug.LogError("Warning: Call metadata is not valid, request will not be send.");
                 return new ExpandoObject();
@@ -81,32 +90,31 @@ namespace MetaseedUnityToolkit
             }
 
             Connection connection = ConnectionsManager.GetConnectionInstance(_actor);
+            return await connection.ViewMethod(_contractAddress, _contractMethod, ConstructArguments(_arguments));
+        }
 
+        public dynamic ConstructArguments(List<ContractArgument> _arguments)
+        {
             dynamic args = new ExpandoObject();
 
             foreach (ContractArgument a in _arguments)
             {
-                args[a.name] = a.value;
+                if (a.type == "i32") ((IDictionary<String, object>)args)[a.name] = Int32.Parse(a.value);
+                else if (a.type == "i64") ((IDictionary<String, object>)args)[a.name] = Int64.Parse(a.value);
+                else if (a.type == "string") ((IDictionary<String, object>)args)[a.name] = a.value.ToString();
             }
-
-            //TODO: gas calculation up to Anton
-
-            return await connection.ViewMethod(_contractAddress, _contractMethod, args);
-        } 
-
-        public static UInt128 GetNearFormat(double amount)
-        {
-            UInt128 p = new UInt128(amount * 1000000000);
-            UInt128.Create(out var lp, 1000000000000000);
-            var res = p * lp;
-            return res;
+            return args;
         }
     }
+
+
 
     [System.Serializable]
     public class ContractArgument
     {
         public string name = "";
         public string value;
+
+        public string type = "i32";
     }
 }

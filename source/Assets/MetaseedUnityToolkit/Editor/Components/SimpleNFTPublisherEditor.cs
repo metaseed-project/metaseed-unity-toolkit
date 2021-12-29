@@ -5,6 +5,10 @@ using UnityEditorInternal;
 using UnityEngine;
 using System.Linq;
 using System;
+using Newtonsoft.Json;
+using System.Dynamic;
+using UnityEngine.UI;
+using NearClient.Utilities;
 using MetaseedUnityToolkit;
 
 [CustomEditor(typeof(SimpleNFTPublisher))]
@@ -42,12 +46,12 @@ public class SimpleNFTPublisherEditor : Editor
             EditorGUILayout.Space();
             EditorGUILayout.Space();
 
-            if (!_target.IsNFTDataValid()) GUI.enabled = false;
+            if (!_target.IsNFTDataValid(_target.title, _target.media, _target.receiverId)) GUI.enabled = false;
 
             if (GUILayout.Button("Mint NFT"))
             {
                 GUI.enabled = true;
-                _target.MintNftWithParameters(_target.contractAddress, _target.title, _target.description, _target.media, _target.receiverId, _target.actor);
+                MintAndWaitForResult();
             }
             GUI.enabled = true;
 
@@ -60,12 +64,12 @@ public class SimpleNFTPublisherEditor : Editor
         {
             EditorGUILayout.Space();
 
-            if (selectedRole == 0)
+            if (_target.selectedRole == 0)
             {
                 GUILayout.Label("You should connect player account first");
                 GUILayout.Label("Drag the 'Player Connect' component somewhere in your scene and press connect.", EditorStyles.miniLabel);
             }
-            else if (selectedRole == 1)
+            else if (_target.selectedRole == 1)
             {
                 GUILayout.Label("You should connect developer account first");
                 GUILayout.Label("Open Near > Developer Account and press connect", EditorStyles.miniLabel);
@@ -74,35 +78,33 @@ public class SimpleNFTPublisherEditor : Editor
         }
     }
 
-    private int selectedRole = 0;
+    public async void MintAndWaitForResult()
+    {
+        Debug.Log("Transaction is pending");
+        dynamic result = await _target.MintNftWithParameters(_target.contractAddress, _target.tokenId, _target.title, _target.description, _target.media, _target.receiverId, _target.actor, _target.nearGas, _target.yoctoNearDeposit);
+        Debug.Log(JsonConvert.SerializeObject(result));
+    }
+
     private bool IsSelectedRoleConnected()
     {
         string[] options = new string[] { "Player", "Developer" };
-        selectedRole = EditorGUILayout.Popup("Choose your role:", selectedRole, options);
-        if (selectedRole == 0) _target.actor = EConnectionActor.Player;
-        else if (selectedRole == 1) _target.actor = EConnectionActor.Developer;
+        _target.selectedRole = EditorGUILayout.Popup("Choose your role:", _target.selectedRole, options);
+        if (_target.selectedRole == 0) _target.actor = EConnectionActor.Player;
+        else if (_target.selectedRole == 1) _target.actor = EConnectionActor.Developer;
 
         return ConnectionsManager.IsConnected(_target.actor);
     }
 
-    bool showExtraSettings = false;
     void DrawExtraSettings()
     {
-        showExtraSettings = EditorGUILayout.Toggle("Settings", showExtraSettings);
-        if (showExtraSettings)
+        _target.showExtraSettings = EditorGUILayout.Toggle("Settings", _target.showExtraSettings);
+        if (_target.showExtraSettings)
         {
-            string tGasField = UnitConverter.GetTGasFormat(_target.gas).ToString();
-            tGasField = EditorGUILayout.TextField("TGas: ", tGasField).Replace('.', ',');
-            _target.gas = UnitConverter.GetGasFormat( Convert.ToDouble(tGasField) );
+            _target.gas = Convert.ToDouble(EditorGUILayout.TextField("TGas: ", _target.gas.ToString()));
+            _target.nearGas = (ulong)UnitConverter.GetGasFormat(_target.gas);
 
-            string depositNearField = UnitConverter.GetNearFormat(_target.deposit).ToString();
-            depositNearField = EditorGUILayout.TextField("Deposit: ", depositNearField).Replace('.', ',');
-            _target.deposit = UnitConverter.GetYoctoNearFormat( Convert.ToDouble(depositNearField) );
-        }
-        else
-        {
-            _target.gas = UnitConverter.GetGasFormat(10.0);
-            _target.deposit = UnitConverter.GetYoctoNearFormat(0.1);
+            _target.deposit = Convert.ToDouble(EditorGUILayout.TextField("Deposit: ", _target.deposit.ToString()));
+            _target.yoctoNearDeposit = (UInt128)UnitConverter.GetYoctoNearFormat(_target.deposit);
         }
     }
 }
