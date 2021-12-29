@@ -51,7 +51,7 @@ public class DemoControllerScript : MonoBehaviour
 
     async void OnConnectPlayer()
     {
-        await playerConnector.ConnectWalletByBrowser(actor);
+        await playerConnector.ConnectWalletByBrowserAsync();
 
         FetchAccountId();
         if (accountId != null)

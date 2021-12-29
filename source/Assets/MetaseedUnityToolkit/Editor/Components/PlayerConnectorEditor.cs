@@ -28,7 +28,7 @@ public class PlayerConnectorEditor : Editor
 
             if (GUILayout.Button("Connect Player Wallet"))
             {
-                _target.ConnectWalletByBrowser(EConnectionActor.Player);
+                _target.ConnectWalletByBrowser();
             }
         }
         else
@@ -39,7 +39,7 @@ public class PlayerConnectorEditor : Editor
 
             if (GUILayout.Button("Disconnect"))
             {
-                ConnectionsManager.Disconnect(EConnectionActor.Player);
+                _target.DisconnectWallet();
             }
         }
     }

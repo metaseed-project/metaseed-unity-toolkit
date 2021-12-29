@@ -7,9 +7,29 @@ namespace MetaseedUnityToolkit
 {
     public class PlayerConnector : MonoBehaviour
     {
-        public async Task ConnectWalletByBrowser(EConnectionActor actor)
+        public async Task ConnectWalletByBrowserAsync()
         {
-            await WalletConnector.Connect("testnet", actor);
+            await WalletConnector.Connect("testnet", EConnectionActor.Player);
+        }
+
+        public void ConnectWalletByBrowser()
+        {
+            WalletConnector.Connect("testnet", EConnectionActor.Player);
+        }
+
+        public void DisconnectWallet()
+        {
+            ConnectionsManager.Disconnect(EConnectionActor.Player);
+        }
+
+        public bool IsPlayerConnected()
+        {
+            return ConnectionsManager.IsConnected(EConnectionActor.Player);
+        }
+
+        public string GetPlayerAccountId()
+        {
+            return PluginStorage.PlayerNearAccountId;
         }
     }
 }
