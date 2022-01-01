@@ -27,20 +27,25 @@ public class ContractCallerEditor : Editor
 
     public override void OnInspectorGUI()
     {
+        serializedObject.Update();
+
         bool isSelectedRoleConnected = IsSelectedRoleConnected();
         if (isSelectedRoleConnected)
         {
             EditorGUILayout.Space();
 
-            _target.contractAddress = EditorGUILayout.TextField("Contract address: ", _target.contractAddress);
+            SerializedProperty contractAddressProp = serializedObject.FindProperty("contractAddress");
+            contractAddressProp.stringValue = EditorGUILayout.TextField("Contract address: ", contractAddressProp.stringValue);
 
-            _target.contractMethod = EditorGUILayout.TextField("Method: ", _target.contractMethod);
+            SerializedProperty contractMethodProp = serializedObject.FindProperty("contractMethod");
+            contractMethodProp.stringValue = EditorGUILayout.TextField("Method: ", contractMethodProp.stringValue);
 
             EditorGUILayout.Space();
             EditorGUILayout.Space();
 
             string[] options = new string[] { "Call", "View" };
-            _target.selectedAction = EditorGUILayout.Popup("Choose action type:", _target.selectedAction, options);
+            SerializedProperty selectedActionProp = serializedObject.FindProperty("selectedAction");
+            selectedActionProp.intValue = EditorGUILayout.Popup("Choose action type:", selectedActionProp.intValue, options);
 
             EditorGUILayout.Space();
 
@@ -49,7 +54,7 @@ public class ContractCallerEditor : Editor
             for (int i = 0; i < listProperty.arraySize; i++)
             {
                 var dialogue = listProperty.GetArrayElementAtIndex(i);
-                EditorGUILayout.PropertyField(dialogue, new GUIContent("Argument "), true);
+                EditorGUILayout.PropertyField(dialogue, new GUIContent("Argument " + (i + 1)), true);
             }
 
             serializedObject.ApplyModifiedProperties();
@@ -58,7 +63,7 @@ public class ContractCallerEditor : Editor
 
             if (_target.selectedAction == 0)
             {
-                if (!_target.IsCallDataValid(_target.contractAddress, _target.contractMethod, _target.arguments)) GUI.enabled = false;
+                if (!_target.IsComponentDataValid()) GUI.enabled = false;
 
                 if (GUILayout.Button("Call contract"))
                 {
@@ -68,8 +73,6 @@ public class ContractCallerEditor : Editor
             }
             else if (_target.selectedAction == 1)
             {
-                if (!_target.IsViewDataValid(_target.contractAddress, _target.contractMethod)) GUI.enabled = false;
-
                 if (GUILayout.Button("View contract"))
                 {
                     GUI.enabled = true;
@@ -103,19 +106,21 @@ public class ContractCallerEditor : Editor
             }
 
         }
+
+        serializedObject.ApplyModifiedProperties();
     }
 
     public async void CallAndWaitForResult()
     {
         Debug.Log("Transaction is pending");
-        dynamic result = await _target.CallContractWithParameters(_target.contractAddress, _target.contractMethod, _target.arguments, _target.actor, _target.nearGas, _target.yoctoNearDeposit);
+        dynamic result = await _target.CallContract();
         Debug.Log(JsonConvert.SerializeObject(result));
     }
 
     public async void ViewAndWaitForResult()
     {
         Debug.Log("Transaction is pending");
-        dynamic result = await _target.ViewContractWithParameters(_target.contractAddress, _target.contractMethod, _target.arguments, _target.actor);
+        dynamic result = await _target.ViewContract();
         Debug.Log(JsonConvert.SerializeObject(result));
     }
 
@@ -123,9 +128,12 @@ public class ContractCallerEditor : Editor
     private bool IsSelectedRoleConnected()
     {
         string[] options = new string[] { "Player", "Developer" };
-        _target.selectedRole = EditorGUILayout.Popup("Choose your role:", _target.selectedRole, options);
-        if (_target.selectedRole == 0) _target.actor = EConnectionActor.Player;
-        else if (_target.selectedRole == 1) _target.actor = EConnectionActor.Developer;
+
+        SerializedProperty selectedRoleProp = serializedObject.FindProperty("selectedRole");
+        selectedRoleProp.intValue = EditorGUILayout.Popup("Choose your role:", selectedRoleProp.intValue, options);
+
+        if (selectedRoleProp.intValue == 0) _target.actor = EConnectionActor.Player;
+        else if (selectedRoleProp.intValue == 1) _target.actor = EConnectionActor.Developer;
 
         return ConnectionsManager.IsConnected(_target.actor);
     }
@@ -135,11 +143,11 @@ public class ContractCallerEditor : Editor
         _target.showExtraSettings = EditorGUILayout.Toggle("Settings", _target.showExtraSettings);
         if (_target.showExtraSettings)
         {
-            _target.gas = Convert.ToDouble(EditorGUILayout.TextField("TGas: ", _target.gas.ToString()));
-            _target.nearGas = (ulong)UnitConverter.GetGasFormat(_target.gas);
+            SerializedProperty gasProp = serializedObject.FindProperty("gas");
+            gasProp.stringValue = EditorGUILayout.TextField("TGas: ", gasProp.stringValue);
 
-            _target.deposit = Convert.ToDouble(EditorGUILayout.TextField("Deposit: ", _target.deposit.ToString()));
-            _target.yoctoNearDeposit = (UInt128)UnitConverter.GetYoctoNearFormat(_target.deposit);
+            SerializedProperty depositProp = serializedObject.FindProperty("deposit");
+            depositProp.stringValue = EditorGUILayout.TextField("Deposit: ", depositProp.stringValue);
         }
     }
 }

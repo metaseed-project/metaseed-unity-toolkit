@@ -23,30 +23,38 @@ public class SimpleNFTPublisherEditor : Editor
 
     public override void OnInspectorGUI()
     {
+        serializedObject.Update();
+
         bool isSelectedRoleConnected = IsSelectedRoleConnected();
         if (isSelectedRoleConnected)
         {
 
             EditorGUILayout.Space();
 
-            _target.contractAddress = EditorGUILayout.TextField("Contract address: ", _target.contractAddress);
+            SerializedProperty contractAddressProp = serializedObject.FindProperty("contractAddress");
+            contractAddressProp.stringValue = EditorGUILayout.TextField("Contract address: ", contractAddressProp.stringValue);
 
-            _target.title = EditorGUILayout.TextField("Title: ", _target.title);
+            SerializedProperty titleProp = serializedObject.FindProperty("title");
+            titleProp.stringValue = EditorGUILayout.TextField("Title: ", titleProp.stringValue);
 
-            _target.description = EditorGUILayout.TextField("Descrition: ", _target.description);
+            SerializedProperty descriptionProp = serializedObject.FindProperty("description");
+            descriptionProp.stringValue = EditorGUILayout.TextField("Description: ", descriptionProp.stringValue);
 
-            _target.tokenId = EditorGUILayout.TextField("TokenId: ", _target.tokenId);
+            SerializedProperty tokenIdProp = serializedObject.FindProperty("tokenId");
+            tokenIdProp.stringValue = EditorGUILayout.TextField("TokenId: ", tokenIdProp.stringValue);
 
-            _target.media = EditorGUILayout.TextField("Media: ", _target.media);
+            SerializedProperty mediaProp = serializedObject.FindProperty("media");
+            mediaProp.stringValue = EditorGUILayout.TextField("Media: ", mediaProp.stringValue);
 
             EditorGUILayout.Space();
 
-            _target.receiverId = EditorGUILayout.TextField("Receiver Id: ", _target.receiverId);
+            SerializedProperty receiverIdProp = serializedObject.FindProperty("receiverId");
+            receiverIdProp.stringValue = EditorGUILayout.TextField("Receiver Id: ", receiverIdProp.stringValue);
 
             EditorGUILayout.Space();
             EditorGUILayout.Space();
 
-            if (!_target.IsNFTDataValid(_target.title, _target.media, _target.receiverId)) GUI.enabled = false;
+            if (!_target.IsComponentDataValid()) GUI.enabled = false;
 
             if (GUILayout.Button("Mint NFT"))
             {
@@ -76,21 +84,26 @@ public class SimpleNFTPublisherEditor : Editor
             }
 
         }
+
+        serializedObject.ApplyModifiedProperties();
     }
 
     public async void MintAndWaitForResult()
     {
         Debug.Log("Transaction is pending");
-        dynamic result = await _target.MintNftWithParameters(_target.contractAddress, _target.tokenId, _target.title, _target.description, _target.media, _target.receiverId, _target.actor, _target.nearGas, _target.yoctoNearDeposit);
+        dynamic result = await _target.MintNft();
         Debug.Log(JsonConvert.SerializeObject(result));
     }
 
     private bool IsSelectedRoleConnected()
     {
         string[] options = new string[] { "Player", "Developer" };
-        _target.selectedRole = EditorGUILayout.Popup("Choose your role:", _target.selectedRole, options);
-        if (_target.selectedRole == 0) _target.actor = EConnectionActor.Player;
-        else if (_target.selectedRole == 1) _target.actor = EConnectionActor.Developer;
+
+        SerializedProperty selectedRoleProp = serializedObject.FindProperty("selectedRole");
+        selectedRoleProp.intValue = EditorGUILayout.Popup("Choose your role:", selectedRoleProp.intValue, options);
+
+        if (selectedRoleProp.intValue == 0) _target.actor = EConnectionActor.Player;
+        else if (selectedRoleProp.intValue == 1) _target.actor = EConnectionActor.Developer;
 
         return ConnectionsManager.IsConnected(_target.actor);
     }
@@ -100,11 +113,11 @@ public class SimpleNFTPublisherEditor : Editor
         _target.showExtraSettings = EditorGUILayout.Toggle("Settings", _target.showExtraSettings);
         if (_target.showExtraSettings)
         {
-            _target.gas = Convert.ToDouble(EditorGUILayout.TextField("TGas: ", _target.gas.ToString()));
-            _target.nearGas = (ulong)UnitConverter.GetGasFormat(_target.gas);
+            SerializedProperty gasProp = serializedObject.FindProperty("gas");
+            gasProp.stringValue = EditorGUILayout.TextField("TGas: ", gasProp.stringValue);
 
-            _target.deposit = Convert.ToDouble(EditorGUILayout.TextField("Deposit: ", _target.deposit.ToString()));
-            _target.yoctoNearDeposit = (UInt128)UnitConverter.GetYoctoNearFormat(_target.deposit);
+            SerializedProperty depositProp = serializedObject.FindProperty("deposit");
+            depositProp.stringValue = EditorGUILayout.TextField("Deposit: ", depositProp.stringValue);
         }
     }
 }
