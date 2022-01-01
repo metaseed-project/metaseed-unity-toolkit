@@ -58,7 +58,7 @@ public class ContractCallerEditor : Editor
 
             if (_target.selectedAction == 0)
             {
-                if (!_target.IsCallDataValid(_target.contractAddress, _target.contractMethod, _target.arguments)) GUI.enabled = false;
+                if (!_target.IsComponentDataValid()) GUI.enabled = false;
 
                 if (GUILayout.Button("Call contract"))
                 {
@@ -68,8 +68,6 @@ public class ContractCallerEditor : Editor
             }
             else if (_target.selectedAction == 1)
             {
-                if (!_target.IsViewDataValid(_target.contractAddress, _target.contractMethod)) GUI.enabled = false;
-
                 if (GUILayout.Button("View contract"))
                 {
                     GUI.enabled = true;
@@ -108,14 +106,14 @@ public class ContractCallerEditor : Editor
     public async void CallAndWaitForResult()
     {
         Debug.Log("Transaction is pending");
-        dynamic result = await _target.CallContractWithParameters(_target.contractAddress, _target.contractMethod, _target.arguments, _target.actor, _target.nearGas, _target.yoctoNearDeposit);
+        dynamic result = await _target.CallContract();
         Debug.Log(JsonConvert.SerializeObject(result));
     }
 
     public async void ViewAndWaitForResult()
     {
         Debug.Log("Transaction is pending");
-        dynamic result = await _target.ViewContractWithParameters(_target.contractAddress, _target.contractMethod, _target.arguments, _target.actor);
+        dynamic result = await _target.ViewContract();
         Debug.Log(JsonConvert.SerializeObject(result));
     }
 
@@ -135,11 +133,8 @@ public class ContractCallerEditor : Editor
         _target.showExtraSettings = EditorGUILayout.Toggle("Settings", _target.showExtraSettings);
         if (_target.showExtraSettings)
         {
-            _target.gas = Convert.ToDouble(EditorGUILayout.TextField("TGas: ", _target.gas.ToString()));
-            _target.nearGas = (ulong)UnitConverter.GetGasFormat(_target.gas);
-
-            _target.deposit = Convert.ToDouble(EditorGUILayout.TextField("Deposit: ", _target.deposit.ToString()));
-            _target.yoctoNearDeposit = (UInt128)UnitConverter.GetYoctoNearFormat(_target.deposit);
+            _target.gas = EditorGUILayout.TextField("TGas: ", _target.gas);
+            _target.deposit = EditorGUILayout.TextField("Deposit: ", _target.deposit);
         }
     }
 }

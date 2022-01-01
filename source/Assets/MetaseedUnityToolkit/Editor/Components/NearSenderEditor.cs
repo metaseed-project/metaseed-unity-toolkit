@@ -31,7 +31,7 @@ public class NearSenderEditor : Editor
 
             _target.receiverId = EditorGUILayout.TextField("Receiver address: ", _target.receiverId);
 
-            _target.deposit = EditorGUILayout.TextField("Amount: ", _target.deposit.ToString());
+            _target.deposit = EditorGUILayout.TextField("Amount: ", _target.deposit);
 
             EditorGUILayout.Space();
             EditorGUILayout.Space();
@@ -62,7 +62,6 @@ public class NearSenderEditor : Editor
                 GUILayout.Label("You should connect developer account first");
                 GUILayout.Label("Open Near > Developer Account and press connect", EditorStyles.miniLabel);
             }
-
         }
     }
 
