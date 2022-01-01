@@ -3,6 +3,7 @@ using System.Dynamic;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using Newtonsoft.Json;
@@ -70,7 +71,7 @@ namespace MetaseedUnityToolkit
             {
                 if (p.name == "") return false;
                 if (p.value == "") return false;
-                // check for type
+                if (!allowedTypes.Contains(p.type)) return false;
             }
             return true;
         }
@@ -132,8 +133,9 @@ namespace MetaseedUnityToolkit
             }
             return args;
         }
-    }
 
+        string[] allowedTypes = { "i32", "i64", "ui32", "ui64", "ui128", "string" };
+    }
 
 
     [System.Serializable]

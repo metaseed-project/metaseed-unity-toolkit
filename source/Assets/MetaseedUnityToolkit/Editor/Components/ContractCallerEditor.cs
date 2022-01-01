@@ -49,7 +49,7 @@ public class ContractCallerEditor : Editor
             for (int i = 0; i < listProperty.arraySize; i++)
             {
                 var dialogue = listProperty.GetArrayElementAtIndex(i);
-                EditorGUILayout.PropertyField(dialogue, new GUIContent("Argument "), true);
+                EditorGUILayout.PropertyField(dialogue, new GUIContent("Argument " + (i + 1)), true);
             }
 
             serializedObject.ApplyModifiedProperties();
