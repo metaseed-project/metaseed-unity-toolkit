@@ -16,7 +16,7 @@ namespace MetaseedUnityToolkit
         [SerializeField]
         public List<ContractArgument> arguments = new List<ContractArgument>();
 
-        [System.NonSerialized]
+        [HideInInspector]
         public string contractAddress = "testcounter.metaseed.testnet";
 
         public string contractMethod = "incrementCounter";

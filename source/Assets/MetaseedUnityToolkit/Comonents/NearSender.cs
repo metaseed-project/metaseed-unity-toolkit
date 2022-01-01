@@ -12,12 +12,14 @@ namespace MetaseedUnityToolkit
 {
     public class NearSender : MonoBehaviour
     {
-        [System.NonSerialized]
+        [HideInInspector]
         public string receiverId = "metaseed.testnet";
 
         public string deposit = "0";
 
         public EConnectionActor actor;
+
+        public int selectedRole = 0;
 
         public bool IsCallDataValid(String _receiverId, Nullable<UInt128> _deposit)
         {

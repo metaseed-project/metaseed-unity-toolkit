@@ -12,7 +12,7 @@ namespace MetaseedUnityToolkit
 {
     public class SimpleNFTPublisher : MonoBehaviour
     {
-        [System.NonSerialized]
+        [HideInInspector]
         public string contractAddress = "example-nft.testnet";
 
         public string title;

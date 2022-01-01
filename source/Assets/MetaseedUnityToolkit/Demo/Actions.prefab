@@ -125,12 +125,13 @@ MonoBehaviour:
   - name: value
     value: 2
     type: i32
+  contractAddress: testcounter.metaseed.testnet
   contractMethod: incrementCounter
   gas: 10
   deposit: 0
   actor: 1
   nearGas: 10000000000000
-  showExtraSettings: 0
+  showExtraSettings: 1
   selectedRole: 0
   selectedAction: 0
 --- !u!1 &5401009022754110765
@@ -177,6 +178,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   arguments: []
+  contractAddress: testcounter.metaseed.testnet
   contractMethod: getCounter
   gas: 10
   deposit: 0
@@ -228,8 +230,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65afe3aff5e303549ae7761a90627a80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  deposit: 0.001
+  receiverId: metaseed.testnet
+  deposit: 0.002
   actor: 1
+  selectedRole: 0
 --- !u!1 &8834453987162992898
 GameObject:
   m_ObjectHideFlags: 0
@@ -273,15 +277,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff512e92b3ebd5549970463bc67d44e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  title: 
-  description: 
-  media: 
-  tokenId: 0
-  receiverId: 
+  contractAddress: super_sword_collection.my_game_name.registry4.metaseed.testnet
+  title: One hand sword
+  description: Super rare sword
+  media: https://bafkreifeih3hr6g5e3alrngb3rsrkvb7wwspibwreu6wagwwfietbboa6u.ipfs.dweb.link
+  tokenId: 3
+  receiverId: phoneiostest.testnet
   gas: 10
   deposit: 0.1
   actor: 1
   nearGas: 0
-  showExtraSettings: 0
+  showExtraSettings: 1
   selectedRole: 0
   selectedAction: 0
