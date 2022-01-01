@@ -123,7 +123,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   arguments:
   - name: value
-    value: 4
+    value: 2
     type: i32
   contractMethod: incrementCounter
   gas: 10

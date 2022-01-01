@@ -46,7 +46,7 @@ public class SimpleNFTPublisherEditor : Editor
             EditorGUILayout.Space();
             EditorGUILayout.Space();
 
-            if (!_target.IsNFTDataValid(_target.title, _target.media, _target.receiverId)) GUI.enabled = false;
+            if (!_target.IsComponentDataValid()) GUI.enabled = false;
 
             if (GUILayout.Button("Mint NFT"))
             {
@@ -81,7 +81,7 @@ public class SimpleNFTPublisherEditor : Editor
     public async void MintAndWaitForResult()
     {
         Debug.Log("Transaction is pending");
-        dynamic result = await _target.MintNftWithParameters(_target.contractAddress, _target.tokenId, _target.title, _target.description, _target.media, _target.receiverId, _target.actor, _target.nearGas, _target.yoctoNearDeposit);
+        dynamic result = await _target.MintNft();
         Debug.Log(JsonConvert.SerializeObject(result));
     }
 
@@ -100,11 +100,8 @@ public class SimpleNFTPublisherEditor : Editor
         _target.showExtraSettings = EditorGUILayout.Toggle("Settings", _target.showExtraSettings);
         if (_target.showExtraSettings)
         {
-            _target.gas = Convert.ToDouble(EditorGUILayout.TextField("TGas: ", _target.gas.ToString()));
-            _target.nearGas = (ulong)UnitConverter.GetGasFormat(_target.gas);
-
-            _target.deposit = Convert.ToDouble(EditorGUILayout.TextField("Deposit: ", _target.deposit.ToString()));
-            _target.yoctoNearDeposit = (UInt128)UnitConverter.GetYoctoNearFormat(_target.deposit);
+            _target.gas = EditorGUILayout.TextField("TGas: ", _target.gas);
+            _target.deposit = EditorGUILayout.TextField("Deposit: ", _target.deposit);
         }
     }
 }

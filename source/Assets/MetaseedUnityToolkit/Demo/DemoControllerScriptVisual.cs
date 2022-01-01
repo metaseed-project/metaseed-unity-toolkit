@@ -6,10 +6,9 @@ using Newtonsoft.Json;
 using NearClient.Utilities;
 using MetaseedUnityToolkit;
 
-public class DemoControllerScript : MonoBehaviour
+public class DemoControllerScriptVisual : MonoBehaviour
 {
     private string accountId;
-    private EConnectionActor actor = EConnectionActor.Player;
 
     public PlayerConnector playerConnector;
     public SimpleNFTPublisher simpleNFTPublisher;
@@ -62,58 +61,29 @@ public class DemoControllerScript : MonoBehaviour
     async void OnSendNear()
     {
         Debug.Log(accountId + " is sending NEAR");
-
-        dynamic result = await nearSender.SendNear(accountId, (UInt128)UnitConverter.GetYoctoNearFormat(0.01), actor);
+        dynamic result = await nearSender.SendNear();
         Debug.Log("Blockchain has returned the result of sending near: " + JsonConvert.SerializeObject(result));
     }
 
     async void OnMintNFT()
     {
-        // Debug.Log(accountId + " is minting an NFT");
-
-        // string name = "Metaseed NFT";
-        // string tokenId = "88";
-        // string description = "Welcome to Metaseed ecosystem!";
-        // string media = "https://gateway.ipfs.io/ipfs/QmcniBv7UQ4gGPQQW2BwbD4ZZHzN3o3tPuNLZCbBchd1zh";
-        // ulong nearGas = (ulong)UnitConverter.GetGasFormat(30);
-
-        // dynamic result = await simpleNFTPublisher.MintNftWithParameters("example-nft.testnet", tokenId, name, description, media, accountId, actor, nearGas);
-        // Debug.Log("Blockchain has returned the result of NFT minting: " + JsonConvert.SerializeObject(result));
+        Debug.Log(accountId + " is minting an NFT");
+        dynamic result = await simpleNFTPublisher.MintNft();
+        Debug.Log("Blockchain has returned the result of NFT minting: " + JsonConvert.SerializeObject(result));
     }
 
     async void OnContractCall()
     {
-        // Debug.Log(accountId + " is calling a contract");
-
-        // // To call an example contract we
-        // // Need to provide the following arguments
-        // // {
-        // //     "value": "4",
-        // // }
-
-        // // In C# we create them using List<ContractArgument>
-        // List<ContractArgument> arguments = new List<ContractArgument>();
-        // arguments.Add(new ContractArgument() { name = "value", value = "4", type = "i32" });
-
-        // ulong nearGas = (ulong)UnitConverter.GetGasFormat(10);
-        // UInt128 yoctoNearDeposit = (UInt128)UnitConverter.GetYoctoNearFormat(0);
-
-        // dynamic result = await contractCaller.CallContractWithParameters("testcounter.metaseed.testnet", "incrementCounter", arguments, actor, nearGas, yoctoNearDeposit);
-        // Debug.Log("Blockchain has returned the result of contract calling: " + JsonConvert.SerializeObject(result));
+        Debug.Log(accountId + " is calling a contract");
+        dynamic result = await contractCaller.CallContract();
+        Debug.Log("Blockchain has returned the result of contract calling: " + JsonConvert.SerializeObject(result));
     }
 
     async void OnContractView()
     {
-        // Debug.Log(accountId + " is calling a contract");
-
-        // // To view an example contract we don't need an arguments, so the list is empty
-        // List<ContractArgument> arguments = new List<ContractArgument>();
-
-        // ulong nearGas = (ulong)UnitConverter.GetGasFormat(10);
-        // UInt128 yoctoNearDeposit = (UInt128)UnitConverter.GetYoctoNearFormat(0);
-
-        // dynamic result = await contractCaller.CallContractWithParameters("testcounter.metaseed.testnet", "getCounter", arguments, actor, nearGas, yoctoNearDeposit);
-        // Debug.Log("Blockchain has returned the result of contract calling: " + JsonConvert.SerializeObject(result));
+        Debug.Log(accountId + " is calling a contract");
+        dynamic result = await contractCaller.ViewContract();
+        Debug.Log("Blockchain has returned the result of contract calling: " + JsonConvert.SerializeObject(result));
     }
 
 
@@ -136,5 +106,4 @@ public class DemoControllerScript : MonoBehaviour
             viewButton.gameObject.SetActive(false);
         }
     }
-
 }
