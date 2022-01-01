@@ -16,17 +16,13 @@ public class DemoControllerScript : MonoBehaviour
     public ContractCaller contractCaller;
     public NearSender nearSender;
 
-    public GameObject connectButtonObject;
-    public GameObject sendButtonObject;
-    public GameObject mintButtonObject;
-    public GameObject callButtonObject;
+    public Button connectButton;
+    public Button sendButton;
+    public Button mintButton;
+    public Button callButton;
+    public Button viewButton;
 
-    private Button connectButton;
-    private Button sendButton;
-    private Button mintButton;
-    private Button callButton;
-
-    void Start()
+    void Awake()
     {
         // Finding Action Components if they are not drag'n'dropped on the script
         if (playerConnector == null) playerConnector = GameObject.Find("Actions/ConnectPlayer").GetComponent<PlayerConnector>();
@@ -34,49 +30,45 @@ public class DemoControllerScript : MonoBehaviour
         if (contractCaller == null) contractCaller = GameObject.Find("Actions/CallContract").GetComponent<ContractCaller>();
         if (nearSender == null) nearSender = GameObject.Find("Actions/SendNear").GetComponent<NearSender>();
 
+        if (playerConnector.IsPlayerConnected()) accountId = playerConnector.GetPlayerAccountId();
+        ChangeUI(playerConnector.IsPlayerConnected());
+    }
+    void Start()
+    {
         Debug.Log($@"ConnectPlayer is found ({playerConnector != null}) | MintNFT is found ({simpleNFTPublisher != null}) | CallContract is found ({contractCaller != null}) | SendNear is found ({nearSender != null})");
 
-        connectButton = connectButtonObject.GetComponent<Button>();
         connectButton.onClick.AddListener(OnConnectPlayer);
-
-        sendButton = sendButtonObject.GetComponent<Button>();
         sendButton.onClick.AddListener(OnSendNear);
-
-        mintButton = mintButtonObject.GetComponent<Button>();
         mintButton.onClick.AddListener(OnMintNFT);
-
-        callButton = callButtonObject.GetComponent<Button>();
         callButton.onClick.AddListener(OnContractCall);
+        viewButton.onClick.AddListener(OnContractView);
     }
 
     async void OnConnectPlayer()
     {
-        await playerConnector.ConnectWalletByBrowserAsync();
-
-        FetchAccountId();
-        if (accountId != null)
-            Debug.Log(accountId + " connected as a player successfully");
+        if (!playerConnector.IsPlayerConnected())
+        {
+            await playerConnector.ConnectWalletByBrowserAsync();
+            accountId = playerConnector.GetPlayerAccountId();
+        }
         else
-            Debug.LogError("En error occured while connecting to " + accountId);
-    }
-
-    void FetchAccountId()
-    {
-        accountId = MetaseedUnityToolkit.PluginStorage.PlayerNearAccountId;
+        {
+            playerConnector.DisconnectWallet();
+            accountId = null;
+        }
+        ChangeUI(playerConnector.IsPlayerConnected());
     }
 
     async void OnSendNear()
     {
-        FetchAccountId();
         Debug.Log(accountId + " is sending NEAR");
 
-        dynamic result = await nearSender.SendNear(accountId, UnitConverter.GetYoctoNearFormat(6.1), actor);
+        dynamic result = await nearSender.SendNear(accountId, (UInt128)UnitConverter.GetYoctoNearFormat(0.01), actor);
         Debug.Log("Blockchain has returned the result of sending near: " + JsonConvert.SerializeObject(result));
     }
 
     async void OnMintNFT()
     {
-        FetchAccountId();
         Debug.Log(accountId + " is minting an NFT");
 
         string name = "Metaseed NFT";
@@ -91,27 +83,58 @@ public class DemoControllerScript : MonoBehaviour
 
     async void OnContractCall()
     {
-        FetchAccountId();
         Debug.Log(accountId + " is calling a contract");
 
         // To call an example contract we
         // Need to provide the following arguments
         // {
-        //     "receiver_id": "foo.testnet",
-        //     "amount": "9999"
+        //     "value": "4",
         // }
 
         // In C# we create them using List<ContractArgument>
         List<ContractArgument> arguments = new List<ContractArgument>();
+        arguments.Add(new ContractArgument() { name = "value", value = "4", type = "i32" });
 
-        arguments.Add(new ContractArgument() { name = "receiver_id", value = accountId, type = "string" });
-        arguments.Add(new ContractArgument() { name = "amount", value = "3", type = "string" });
+        ulong nearGas = (ulong)UnitConverter.GetGasFormat(10);
+        UInt128 yoctoNearDeposit = (UInt128)UnitConverter.GetYoctoNearFormat(0);
 
-        ulong nearGas = (ulong)UnitConverter.GetGasFormat(30);
-
-        UInt128 yoctoNearDeposit = (UInt128)UnitConverter.GetYoctoNearFormat(0.7);
-
-        dynamic result = await contractCaller.CallContractWithParameters("ft.examples.testnet", "ft_mint", arguments, actor, nearGas, yoctoNearDeposit);
+        dynamic result = await contractCaller.CallContractWithParameters("testcounter.metaseed.testnet", "incrementCounter", arguments, actor, nearGas, yoctoNearDeposit);
         Debug.Log("Blockchain has returned the result of contract calling: " + JsonConvert.SerializeObject(result));
     }
+
+    async void OnContractView()
+    {
+        Debug.Log(accountId + " is calling a contract");
+
+        // To view an example contract we don't need an arguments, so the list is empty
+        List<ContractArgument> arguments = new List<ContractArgument>();
+
+        ulong nearGas = (ulong)UnitConverter.GetGasFormat(10);
+        UInt128 yoctoNearDeposit = (UInt128)UnitConverter.GetYoctoNearFormat(0);
+
+        dynamic result = await contractCaller.CallContractWithParameters("testcounter.metaseed.testnet", "getCounter", arguments, actor, nearGas, yoctoNearDeposit);
+        Debug.Log("Blockchain has returned the result of contract calling: " + JsonConvert.SerializeObject(result));
+    }
+
+
+    private void ChangeUI(bool connected)
+    {
+        if (connected)
+        {
+            connectButton.GetComponentInChildren<Text>().text = "Disconnect: " + accountId;
+            sendButton.gameObject.SetActive(true);
+            mintButton.gameObject.SetActive(true);
+            callButton.gameObject.SetActive(true);
+            viewButton.gameObject.SetActive(true);
+        }
+        else
+        {
+            connectButton.GetComponentInChildren<Text>().text = "Connect Player";
+            sendButton.gameObject.SetActive(false);
+            mintButton.gameObject.SetActive(false);
+            callButton.gameObject.SetActive(false);
+            viewButton.gameObject.SetActive(false);
+        }
+    }
+
 }

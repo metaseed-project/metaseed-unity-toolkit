@@ -44,5 +44,11 @@ namespace MetaseedUnityToolkit
             Connection connection = ConnectionsManager.GetConnectionInstance(_actor);
             return await connection.SendMoney(_receiverId, _deposit);
         }
+
+        public async Task<dynamic> SendNear()
+        {
+            UInt128 yoctoNearDeposit = (UInt128)UnitConverter.GetYoctoNearFormat(deposit);
+            return await SendNear(receiverId, yoctoNearDeposit, actor);
+        }
     }
 }

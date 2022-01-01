@@ -29,6 +29,7 @@ namespace MetaseedUnityToolkit
 
         public string GetPlayerAccountId()
         {
+            if (!IsPlayerConnected()) throw new System.Exception("Player is not connected");
             return PluginStorage.PlayerNearAccountId;
         }
     }
