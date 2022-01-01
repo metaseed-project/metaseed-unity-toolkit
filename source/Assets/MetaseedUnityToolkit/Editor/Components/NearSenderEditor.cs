@@ -31,19 +31,17 @@ public class NearSenderEditor : Editor
 
             _target.receiverId = EditorGUILayout.TextField("Receiver address: ", _target.receiverId);
 
-            _target.deposit = Convert.ToDouble(EditorGUILayout.TextField("Amount: ", _target.deposit.ToString()));
-
-            UInt128 yoctoNearDeposit = (UInt128)UnitConverter.GetYoctoNearFormat(_target.deposit);
+            _target.deposit = EditorGUILayout.TextField("Amount: ", _target.deposit.ToString());
 
             EditorGUILayout.Space();
             EditorGUILayout.Space();
 
-            if (!_target.IsCallDataValid(_target.receiverId, yoctoNearDeposit)) GUI.enabled = false;
+            if (!_target.IsComponentDataValid()) GUI.enabled = false;
 
             if (GUILayout.Button("Send"))
             {
                 GUI.enabled = true;
-                SendAndWaitForResult(yoctoNearDeposit);
+                SendAndWaitForResult();
             }
 
             GUI.enabled = true;
@@ -68,10 +66,10 @@ public class NearSenderEditor : Editor
         }
     }
 
-    public async void SendAndWaitForResult(UInt128 yoctoNearDeposit)
+    public async void SendAndWaitForResult()
     {
         Debug.Log("Transaction is pending");
-        dynamic result = await _target.SendNear(_target.receiverId, yoctoNearDeposit, _target.actor);
+        dynamic result = await _target.SendNear();
         Debug.Log(JsonConvert.SerializeObject(result));
     }
 

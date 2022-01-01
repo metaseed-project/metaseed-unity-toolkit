@@ -15,7 +15,7 @@ namespace MetaseedUnityToolkit
         [System.NonSerialized]
         public string receiverId = "metaseed.testnet";
 
-        public double deposit = 0f;
+        public string deposit = "0";
 
         public EConnectionActor actor;
 
@@ -31,23 +31,33 @@ namespace MetaseedUnityToolkit
         {
             if (!IsCallDataValid(_receiverId, _deposit))
             {
-                Debug.LogError("Warning: Transaction metadata is not valid, request will not be send.");
-                return new ExpandoObject();
+                throw new Exception("Warning: Transaction metadata is not valid, request will not be send.");
             }
 
             if (!ConnectionsManager.IsConnected(_actor))
             {
-                Debug.LogError("Warning: Your near account is not connected.");
-                return new ExpandoObject();
+                throw new Exception("Warning: Your near account is not connected.");
             }
 
             Connection connection = ConnectionsManager.GetConnectionInstance(_actor);
             return await connection.SendMoney(_receiverId, _deposit);
         }
 
+        public bool IsComponentDataValid()
+        {
+            double _deposit;
+            if (!Double.TryParse(deposit, out _deposit)) return false;
+            return true;
+        }
+
         public async Task<dynamic> SendNear()
         {
-            UInt128 yoctoNearDeposit = (UInt128)UnitConverter.GetYoctoNearFormat(deposit);
+            if (!IsComponentDataValid())
+            {
+                throw new Exception("Warning: Component data is not valid. Change values or use SendNear(String _receiverId, UInt128 _deposit, EConnectionActor _actor) instead");
+            }
+
+            UInt128 yoctoNearDeposit = (UInt128)UnitConverter.GetYoctoNearFormat(Convert.ToDouble(deposit));
             return await SendNear(receiverId, yoctoNearDeposit, actor);
         }
     }
