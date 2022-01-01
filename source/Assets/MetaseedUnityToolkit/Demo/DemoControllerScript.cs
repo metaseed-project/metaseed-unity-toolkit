@@ -119,7 +119,7 @@ public class DemoControllerScript : MonoBehaviour
         ulong nearGas = (ulong)UnitConverter.GetGasFormat(10);
         UInt128 yoctoNearDeposit = (UInt128)UnitConverter.GetYoctoNearFormat(0);
 
-        dynamic result = await contractCaller.CallContract("testcounter.metaseed.testnet", "getCounter", arguments, actor, nearGas, yoctoNearDeposit);
+        dynamic result = await contractCaller.ViewContract("testcounter.metaseed.testnet", "getCounter", arguments, actor);
         Debug.Log("Blockchain has returned the result of contract calling: " + JsonConvert.SerializeObject(result));
     }
 

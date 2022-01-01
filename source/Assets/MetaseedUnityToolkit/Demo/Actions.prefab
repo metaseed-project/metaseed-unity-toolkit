@@ -281,9 +281,9 @@ MonoBehaviour:
   title: One hand sword
   description: Super rare sword
   media: https://bafkreifeih3hr6g5e3alrngb3rsrkvb7wwspibwreu6wagwwfietbboa6u.ipfs.dweb.link
-  tokenId: 3
+  tokenId: 6
   receiverId: phoneiostest.testnet
-  gas: 10
+  gas: 15
   deposit: 0.1
   actor: 1
   nearGas: 0
