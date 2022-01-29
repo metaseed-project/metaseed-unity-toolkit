@@ -2,10 +2,12 @@
   
   # Metaseed-unity-toolkit
   
-  Helps develop games on Unity3d &amp; NEAR blockchain in two click
+  Helps develop games on Unity3d &amp; NEAR blockchain in two clicks
 
   The plugin is zipped in a “.unitypackage” file in folder “releases/”, and if you need the sources of the package file, they can be found in “source/”.
   There are 2 demo scenes - one with code, and the second one with components.
+  **Change your project's .NET version to 4.x if you have any errors after importing the plugin**
+  (Edit -> Project Settings -> Player -> Api Compatibility Level)
   
   ### If you find any bugs or need some help feel free to contact us
   [<img src="https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white" />](https://t.me/metaseed_near)
