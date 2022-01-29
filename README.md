@@ -7,6 +7,12 @@
   The plugin is zipped in a “.unitypackage” file in folder “releases/”, and if you need the sources of the package file, they can be found in “source/”.
   There are 2 demo scenes - one with code, and the second one with components.
   
+  ### If you find any bugs or need some help feel free to contact us
+  [<img src="https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white" />](https://t.me/metaseed_near)
+  
+  ### Also, subscribe to receive our newest announcements and updates
+  [<img src="https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white" />](https://twitter.com/metaseed_near)
+  
   # Tutorials
   
   [Tutorial Part 1 (Demo scenes overview) [RU]](https://www.youtube.com/watch?v=36YzP561ST8)
